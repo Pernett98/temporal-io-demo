@@ -6,16 +6,18 @@ const fastify = Fastify({
     logger: true
 })
 
-fastify.post('/messages/:messageId', async (req, res) => {
-    // @ts-ignore
+type MessageParams = {
+    messageId: string
+}
+
+fastify.post<{ Params: MessageParams, Body: Message }>('/messages/:messageId', async (req, res) => {
     const messageId: string = req.params.messageId
-    const message: Message = req.body as Message
+    const message: Message = req.body
     await startSignMessageCall(message, messageId)
     res.send({ info: 'signing process started' })
 })
 
-fastify.get('/messages/:messageId', async (req, res) => {
-    // @ts-ignore
+fastify.get<{ Params: MessageParams }>('/messages/:messageId', async (req, res) => {
     const result = await getMessageById(req.params?.messageId as string)
     res.send(result)
 })
